@@ -4,7 +4,7 @@
  * Licence: WTFPL v2
  */
 
-namespace Kazlik\Schemabuilder;
+namespace Kazlik\SchemaBuilder;
 
 
 interface IApplyTableChangesService

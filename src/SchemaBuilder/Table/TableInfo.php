@@ -4,7 +4,7 @@
  * Licence: WTFPL v2
  */
 
-namespace Kazlik\Schemabuilder\Table;
+namespace Kazlik\SchemaBuilder\Table;
 
 
 use Doctrine\DBAL\Schema\Table;
@@ -50,34 +50,34 @@ abstract class TableInfo implements ITableInfo
 	abstract protected function _getTableName(): string;
 
 
-	protected function _addPrimaryKeyColumn( Table $Table, string $columnName = 'id' ): void
+	protected function _addPrimaryKeyColumn( Table $table, string $columnName = 'id' ): void
 	{
-		$Table->addColumn( $columnName, 'integer' )->setAutoincrement( true )->setUnsigned( true );
-		$Table->setPrimaryKey( [ $columnName ] );
+		$table->addColumn( $columnName, 'integer' )->setAutoincrement( true )->setUnsigned( true );
+		$table->setPrimaryKey( [ $columnName ] );
 	}
 
 
-	protected function _addForeignKey( Table $Table,
+	protected function _addForeignKey( Table $table,
 	                                   string $foreignTableClass,
 	                                   array $localColumnNames,
 	                                   array $foreignColumnNames,
 	                                   array $options = [],
 	                                   $constraintName = null )
 	{
-		/** @var ITableInfo $ForeignTableInfo */
-		$ForeignTableInfo = new $foreignTableClass();
-		$foreignTable = $ForeignTableInfo->create();
-		$Table->addForeignKeyConstraint( $foreignTable, $localColumnNames, $foreignColumnNames, $options, $constraintName );
+		/** @var ITableInfo $foreignTableInfo */
+		$foreignTableInfo = new $foreignTableClass();
+		$foreignTable = $foreignTableInfo->create();
+		$table->addForeignKeyConstraint( $foreignTable, $localColumnNames, $foreignColumnNames, $options, $constraintName );
 	}
 
 
-	protected function _addLocalForeignKey( Table $Table,
+	protected function _addLocalForeignKey( Table $table,
 	                                        array $localColumnNames,
 	                                        array $foreignColumnNames,
 	                                        array $options = [],
 	                                        $constraintName = null )
 	{
-		$Table->addForeignKeyConstraint( $Table, $localColumnNames, $foreignColumnNames, $options, $constraintName );
+		$table->addForeignKeyConstraint( $table, $localColumnNames, $foreignColumnNames, $options, $constraintName );
 	}
 
 

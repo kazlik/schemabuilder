@@ -4,7 +4,7 @@
  * Licence: WTFPL v2
  */
 
-namespace Kazlik\Schemabuilder\Config;
+namespace Kazlik\SchemaBuilder\Config;
 
 
 interface ITableClassesConfig

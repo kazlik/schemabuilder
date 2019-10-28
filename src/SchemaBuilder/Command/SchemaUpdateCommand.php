@@ -7,7 +7,7 @@
 namespace Kazlik\SchemaBuilder\Command;
 
 use Illuminate\Console\Command;
-use Kazlik\Schemabuilder\IApplyTableChangesService;
+use Kazlik\SchemaBuilder\IApplyTableChangesService;
 
 class SchemaUpdateCommand extends Command
 {
@@ -42,8 +42,8 @@ class SchemaUpdateCommand extends Command
      *
      * @return mixed
      */
-    public function handle( IApplyTableChangesService $ApplyTableChangesService )
+    public function handle( IApplyTableChangesService $applyTableChangesService )
     {
-        $ApplyTableChangesService->applyAllChanges();
+        $applyTableChangesService->applyAllChanges();
     }
 }

@@ -4,57 +4,57 @@
  * Licence: WTFPL v2
  */
 
-namespace Kazlik\Schemabuilder;
+namespace Kazlik\SchemaBuilder;
 
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Table;
-use Kazlik\Schemabuilder\Config\ITableClassesConfig;
-use Kazlik\Schemabuilder\Table\ITableInfo;
+use Kazlik\SchemaBuilder\Config\ITableClassesConfig;
+use Kazlik\SchemaBuilder\Table\ITableInfo;
 
 
 class ApplyTableChangesService implements IApplyTableChangesService
 {
 
 	/** @var ITableClassesConfig */
-	private $_TableClassesConfig;
+	private $_tableClassesConfig;
 
 	/** @var Connection */
-	private $_Connection;
+	private $_connection;
 
 	/**
 	 * ApplyTableChangesService constructor.
 	 *
-	 * @param ITableClassesConfig $_TableClassesConfig
-	 * @param Connection          $_Connection
+	 * @param ITableClassesConfig $_tableClassesConfig
+	 * @param Connection          $_connection
 	 */
-	public function __construct( ITableClassesConfig $_TableClassesConfig, Connection $_Connection )
+	public function __construct( ITableClassesConfig $_tableClassesConfig, Connection $_connection )
 	{
-		$this->_TableClassesConfig = $_TableClassesConfig;
-		$this->_Connection = $_Connection;
+		$this->_tableClassesConfig = $_tableClassesConfig;
+		$this->_connection = $_connection;
 	}
 
 
 	public function applyAllChanges(): bool
 	{
-		$classes = $this->_TableClassesConfig->getClasses();
+		$classes = $this->_tableClassesConfig->getClasses();
 		/** @var Table[] $listTable */
 		$listTable = [];
 		foreach ( $classes as $class ) {
-			$ReflectionClass = new \ReflectionClass( $class );
-			$implementsInterface = $ReflectionClass->implementsInterface( ITableInfo::class );
+			$reflectionClass = new \ReflectionClass( $class );
+			$implementsInterface = $reflectionClass->implementsInterface( ITableInfo::class );
 			if ( !$implementsInterface ) {
 				throw new \InvalidArgumentException( 'Class ' . $class . ' is not instance of ' . ITableInfo::class );
 			}
-			/** @var ITableInfo $TableInfo */
-			$TableInfo = new $class;
-			$listTable[ $TableInfo->create()->getName() ] = $TableInfo->create();
+			/** @var ITableInfo $tableInfo */
+			$tableInfo = new $class;
+			$listTable[ $tableInfo->create()->getName() ] = $tableInfo->create();
 		}
-		$Comparator = new Comparator();
-		$SchemaManager = $this->_Connection->getSchemaManager();
-		$DatabasePlatform = $this->_Connection->getDatabasePlatform();
-		$listTableName = $SchemaManager->listTableNames();
+		$comparator = new Comparator();
+		$schemaManager = $this->_connection->getSchemaManager();
+		$databasePlatform = $this->_connection->getDatabasePlatform();
+		$listTableName = $schemaManager->listTableNames();
 		$listSql = [];
 		$existingTable = [];
 		foreach ( $listTableName as $tableName ) {
@@ -62,11 +62,11 @@ class ApplyTableChangesService implements IApplyTableChangesService
 			if ( !isset( $listTable[ $tableName ] ) ) {
 				continue;
 			}
-			$NewTable = $listTable[ $tableName ];
-			$ActualTable = $SchemaManager->listTableDetails( $tableName );
-			$TableDiff = $Comparator->diffTable( $ActualTable, $NewTable );
-			if ( $TableDiff ) {
-				$listSql = array_merge( $listSql, $DatabasePlatform->getAlterTableSQL( $TableDiff ) );
+			$newTable = $listTable[ $tableName ];
+			$actualTable = $schemaManager->listTableDetails( $tableName );
+			$tableDiff = $comparator->diffTable( $actualTable, $newTable );
+			if ( $tableDiff ) {
+				$listSql = array_merge( $listSql, $databasePlatform->getAlterTableSQL( $tableDiff ) );
 			}
 		}
 		foreach ( $listTable as $Table ) {
@@ -74,10 +74,10 @@ class ApplyTableChangesService implements IApplyTableChangesService
 			if ( isset( $existingTable[ $tableName ] ) ) {
 				continue;
 			}
-			$SchemaManager->createTable( $Table );
+			$schemaManager->createTable( $Table );
 		}
 		foreach ( $listSql as $sql ) {
-			$this->_Connection->query( $sql );
+			$this->_connection->query( $sql );
 		}
 		return true;
 	}

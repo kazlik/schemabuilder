@@ -4,7 +4,7 @@
  * Licence: WTFPL v2
  */
 
-namespace Kazlik\Schemabuilder\Table;
+namespace Kazlik\SchemaBuilder\Table;
 
 
 
