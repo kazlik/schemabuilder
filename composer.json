@@ -1,7 +1,7 @@
 {
   "name": "kazlik/schemabuilder",
   "description": "Database Schema Builder",
-  "license": "WTFPL v2",
+  "license": "WTFPL",
   "authors": [
     {
       "name": "Marek Dočekal"
