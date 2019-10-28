@@ -1,0 +1,20 @@
+{
+  "name": "kazlik/schemabuilder",
+  "description": "Database Schema Builder",
+  "authors": [
+    {
+      "name": "Marek Dočekal"
+    }
+  ],
+  "require": {
+    "doctrine/dbal": "2.9.*"
+  },
+  "suggest": {
+    "illuminate/console": "Use prepared command to run schema update"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  }
+}
