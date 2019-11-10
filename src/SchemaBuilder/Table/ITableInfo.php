@@ -14,4 +14,7 @@ use Doctrine\DBAL\Schema\Table;
 interface ITableInfo
 {
 	public function create(): Table;
+
+
+    public function disableForeignKeys( $value = true ): self;
 }
