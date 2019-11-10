@@ -73,6 +73,9 @@ abstract class TableInfo implements ITableInfo
 	                                   array $options = [],
 	                                   $constraintName = null )
 	{
+        if ( $this->_disableForeignKeys ) {
+            return;
+        }
 		/** @var ITableInfo $foreignTableInfo */
 		$foreignTableInfo = new $foreignTableClass();
         $foreignTableInfo->disableForeignKeys();
