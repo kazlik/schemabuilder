@@ -38,19 +38,10 @@ abstract class TableInfo implements ITableInfo
 	const _TYPE_GUID = 'guid';
 	const _TYPE_DATEINTERVAL = 'dateinterval';
 
-	private $_disableForeignKeys = false;
-
 	abstract public function create(): Table;
 
 
-    public function disableForeignKeys( $value = true ): ITableInfo
-    {
-        $this->_disableForeignKeys = $value;
-        return $this;
-    }
-
-
-    protected function _createTable(): Table
+	protected function _createTable(): Table
 	{
 		return new Table( $this->_getTableName() );
 	}
@@ -73,12 +64,8 @@ abstract class TableInfo implements ITableInfo
 	                                   array $options = [],
 	                                   $constraintName = null )
 	{
-        if ( $this->_disableForeignKeys ) {
-            return;
-        }
 		/** @var ITableInfo $foreignTableInfo */
 		$foreignTableInfo = new $foreignTableClass();
-        $foreignTableInfo->disableForeignKeys();
 		$foreignTable = $foreignTableInfo->create();
 		$table->addForeignKeyConstraint( $foreignTable, $localColumnNames, $foreignColumnNames, $options, $constraintName );
 	}
