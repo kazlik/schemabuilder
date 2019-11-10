@@ -46,6 +46,7 @@ abstract class TableInfo implements ITableInfo
     public function disableForeignKeys( $value = true ): ITableInfo
     {
         $this->_disableForeignKeys = $value;
+        return $this;
     }
 
 
