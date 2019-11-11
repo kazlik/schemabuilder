@@ -13,5 +13,7 @@ use Doctrine\DBAL\Schema\Table;
 
 interface ITableInfo
 {
-	public function create(): Table;
+    public function getTable(): Table;
+
+    public function getForeignKeys(): array;
 }

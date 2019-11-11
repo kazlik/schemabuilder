@@ -39,8 +39,8 @@ class ApplyTableChangesService implements IApplyTableChangesService
 	public function applyAllChanges(): bool
 	{
 		$classes = $this->_tableClassesConfig->getClasses();
-		/** @var Table[] $listTable */
-		$listTable = [];
+		/** @var ITableInfo[] $listTableInfo */
+		$listTableInfo = [];
 		foreach ( $classes as $class ) {
 			$reflectionClass = new \ReflectionClass( $class );
 			$implementsInterface = $reflectionClass->implementsInterface( ITableInfo::class );
@@ -49,8 +49,19 @@ class ApplyTableChangesService implements IApplyTableChangesService
 			}
 			/** @var ITableInfo $tableInfo */
 			$tableInfo = new $class;
-			$listTable[ $tableInfo->create()->getName() ] = $tableInfo->create();
+			$listTableInfo[ $class ] = $tableInfo;
 		}
+        foreach ( $listTableInfo as $tableInfo ) {
+            foreach ( $tableInfo->getForeignKeys() as $foreignKey ) {
+                $tableInfo->getTable()
+                          ->addForeignKeyConstraint( $listTableInfo[ $foreignKey[ 0 ] ],
+                                                     $foreignKey[ 1 ],
+                                                     $foreignKey[ 2 ],
+                                                     $foreignKey[ 3 ],
+                                                     $foreignKey[ 4 ] )
+                ;
+            }
+        }
 		$comparator = new Comparator();
 		$schemaManager = $this->_connection->getSchemaManager();
 		$databasePlatform = $this->_connection->getDatabasePlatform();
@@ -59,17 +70,17 @@ class ApplyTableChangesService implements IApplyTableChangesService
 		$existingTable = [];
 		foreach ( $listTableName as $tableName ) {
 			$existingTable[ $tableName ] = true;
-			if ( !isset( $listTable[ $tableName ] ) ) {
+			if ( !isset( $listTableInfo[ $tableName ] ) ) {
 				continue;
 			}
-			$newTable = $listTable[ $tableName ];
+			$newTable = $listTableInfo[ $tableName ]->getTable();
 			$actualTable = $schemaManager->listTableDetails( $tableName );
 			$tableDiff = $comparator->diffTable( $actualTable, $newTable );
 			if ( $tableDiff ) {
 				$listSql = array_merge( $listSql, $databasePlatform->getAlterTableSQL( $tableDiff ) );
 			}
 		}
-		foreach ( $listTable as $Table ) {
+		foreach ( $listTableInfo as $Table ) {
 			$tableName = $Table->getName();
 			if ( isset( $existingTable[ $tableName ] ) ) {
 				continue;
